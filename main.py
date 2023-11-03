@@ -4,9 +4,40 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 from bs4 import BeautifulSoup
 import time
-TX_URL=''
+import random
+
+def download_modle(td_list, browser):
+    num = 0
+    for i in range(1, len(tr_lsit)):
+        td_list = tr_lsit[i].find_elements(By.TAG_NAME, 'td')
+        if td_list[2].text == '进行中':
+            num = 1
+            s1 = browser.find_element(By.XPATH, f'//*[@id="root"]/div/div/section/section/main/div/div/div[2]/div/div/div/div/div[2]/div/div/div/div/div/table/tbody/tr[{i+1}]/td[12]/div/div/div[2]/button')
+            s1.click()
+            time.sleep(3)
+            t1 = browser.find_element(By.XPATH, '/html/body/div[2]/div/div[2]/div/div/div[2]/div/div/div/div/div/div/div/div/div/div/table/tbody')
+            tr1_list = t1.find_elements(By.TAG_NAME, 'tr')
+            for j in range(1, len(tr1_list), 2):
+                random_number = random.random()
+                k = j if random_number < 0.5 and j+1 <= len(tr1_list) else j+1##需要测试测试
+                s2 = browser.find_element(By.XPATH, f'/html/body/div[2]/div/div[2]/div/div/div[2]/div/div/div/div/div/div/div/div/div/div/table/tbody/tr[{k+1}]/td[3]/div/div/div[2]/span/button')
+                s2.click()                            
+                time.sleep(3)
+                input1_s2 = browser.find_element(By.XPATH, '/html/body/div[3]/div/div[2]/div/div/div[2]/form/div/div[1]/div[1]/div[2]/div[1]/div/span/input')
+                input1_s2.send_keys('cb_test1')
+                input2_s2 = browser.find_element(By.XPATH, '/html/body/div[3]/div/div[2]/div/div/div[2]/form/div/div[1]/div[4]/div[2]/div/div/div/textarea')
+                input2_s2.send_keys('cb_test1')
+                time.sleep(2)
+                s3 = browser.find_element(By.XPATH, '/html/body/div[3]/div/div[2]/div/div/div[2]/form/div/div[2]/div/div[1]/span/button')
+                s3.click()
+                time.sleep(1)
+                s4 = browser.find_element(By.XPATH, '/html/body/div[2]/div/div[2]/div/div/div[1]/div/button/span/svg')       
+                s4.click()
+                time.sleep(1)    
+                s4.click()
+    return num
 # 初始化浏览器
-browser = webdriver.Chrome()
+browser = webdriver.Edge()
 #PART1:自动化登陆 打开登录页面
 login_url = 'https://aiarena.tencent.com/p/user/login?redirect=https%3A%2F%2Faiarena.tencent.com%2Flogin'
 browser.get(login_url)
@@ -20,31 +51,15 @@ password.send_keys('bupt151540809')
 submit.click()
 time.sleep(5)
 browser.get('https://aiarena.tencent.com/p/competition-exp/21/cluster-training') # 替换为目标网站的URL
-time.sleep(10)
 #PART2: 进入训练监控，获取模型指标信息，选择周围时间点模型。
 # 查找上传文件输入框并上传文件
-table=browser.find_elements(By.XPATH,"//*[@class='ant-table-tbody']")
-# 解析表格元素的HTML文档
-soup = BeautifulSoup(table[0].get_attribute('innerHTML'), 'html.parser')
-print(soup)
-# 提取表格元素中的每一行数据
-rows = soup.find_all('tr')
-elements = browser.find_elements(By.XPATH,"//span[@class='ant-tag ant-tag-primary kuic-tag-point-primary']")
-print(elements)
-file_input = browser.find_element(By.ID, 'fileInput')  # 替换为实际的输入框ID或其他定位方法
-file_path = 'path_to_your_file/model_script.py'  # 替换为实际文件路径
-file_input.send_keys(file_path)
+time.sleep(10)
+num_train = 0
+while(num_train!=2):
+    table = browser.find_element(By.XPATH, '//*[@id="root"]/div/div/section/section/main/div/div/div[2]/div/div/div/div/div[2]/div/div/div/div/div/table/tbody')
+    tr_lsit = table.find_elements(By.TAG_NAME, 'tr')
+    num_train += download_modle(tr_lsit, browser)
+    if num_train == 2 : break
+    s = browser.find_element(By.XPATH,'//*[@id="root"]/div/div/section/section/main/div/div/div[2]/div/div/div/div/div[2]/div/div/ul/li[9]/button')
 
-#PART3: 选择模型,自动提交评估任务
-model_select = Select(browser.find_element(By.ID, 'modelSelect'))  # 替换为实际的下拉选择框ID或其他定位方法
-model_select.select_by_value('model_option_value')  # 替换为实际模型选项值
-
-# 点击提交按钮
-submit_button = browser.find_element(By.ID, 'submitBtn')  # 替换为实际的提交按钮ID或其他定位方法
-submit_button.click()
-
-# 等待一段时间，以确保上传和选择操作完成
-time.sleep(5)
-#PART4： 提取评估结果，生成ELO分数，并返回下阶段预备训练模型
-# 关闭浏览器
 browser.quit()
