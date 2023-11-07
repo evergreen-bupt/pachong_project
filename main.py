@@ -1,65 +1,148 @@
+# <<<<<<< Updated upstream
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 from bs4 import BeautifulSoup
 import time
-import random
 
-def download_modle(td_list, browser):
-    num = 0
-    for i in range(1, len(tr_lsit)):
-        td_list = tr_lsit[i].find_elements(By.TAG_NAME, 'td')
-        if td_list[2].text == '进行中':
-            num = 1
-            s1 = browser.find_element(By.XPATH, f'//*[@id="root"]/div/div/section/section/main/div/div/div[2]/div/div/div/div/div[2]/div/div/div/div/div/table/tbody/tr[{i+1}]/td[12]/div/div/div[2]/button')
-            s1.click()
+
+EVAL_NUM = 1
+
+class pa_chong():
+    def __init__(self):
+        self.last_name = ['6h16min25s', None]
+        self.num_train = 0
+        self.model_list = []
+        self.eval_model_list = []
+        self.last_name_counts = {'Update-v6-1':1}
+        self.emeny = 'beseline3'
+        self.time = 600
+    
+    def go(self):
+        # 初始化浏览器
+        self.browser = webdriver.Chrome()
+        #PART1:自动化登陆 打开登录页面
+        login_url = 'https://aiarena.tencent.com/p/user/login?redirect=https%3A%2F%2Faiarena.tencent.com%2Flogin'
+        self.browser.get(login_url)
+        # 输入用户名和密码
+        username = self.browser.find_element(By.ID,'basic_email')  # 替换为实际的用户名输入框定位方法
+        password = self.browser.find_element(By.ID, 'basic_password') # 替换为实际的密码输入框定位方法
+        submit = self.browser.find_element(By.XPATH,'//*[@id="basic"]/div[4]/div/div/div/span/button')
+        username.send_keys('609531932@qq.com')
+        password.send_keys('bupt151540809')
+        submit.click()
+        time.sleep(5)
+        while True:
+            self.download_modle()
+            self.browser.get('https://aiarena.tencent.com/p/competition-exp/21/model-manage')
             time.sleep(3)
-            t1 = browser.find_element(By.XPATH, '/html/body/div[2]/div/div[2]/div/div/div[2]/div/div/div/div/div/div/div/div/div/div/table/tbody')
-            tr1_list = t1.find_elements(By.TAG_NAME, 'tr')
-            for j in range(1, len(tr1_list), 2):
-                random_number = random.random()
-                k = j if random_number < 0.5 and j+1 <= len(tr1_list) else j+1##需要测试测试
-                s2 = browser.find_element(By.XPATH, f'/html/body/div[2]/div/div[2]/div/div/div[2]/div/div/div/div/div/div/div/div/div/div/table/tbody/tr[{k+1}]/td[3]/div/div/div[2]/span/button')
-                s2.click()                            
-                time.sleep(3)
-                input1_s2 = browser.find_element(By.XPATH, '/html/body/div[3]/div/div[2]/div/div/div[2]/form/div/div[1]/div[1]/div[2]/div[1]/div/span/input')
-                input1_s2.send_keys('cb_test1')
-                input2_s2 = browser.find_element(By.XPATH, '/html/body/div[3]/div/div[2]/div/div/div[2]/form/div/div[1]/div[4]/div[2]/div/div/div/textarea')
-                input2_s2.send_keys('cb_test1')
-                time.sleep(2)
-                s3 = browser.find_element(By.XPATH, '/html/body/div[3]/div/div[2]/div/div/div[2]/form/div/div[2]/div/div[1]/span/button')
-                s3.click()
-                time.sleep(1)
-                s4 = browser.find_element(By.XPATH, '/html/body/div[2]/div/div[2]/div/div/div[1]/div/button/span/svg')       
-                s4.click()
-                time.sleep(1)    
-                s4.click()
-    return num
-# 初始化浏览器
-browser = webdriver.Edge()
-#PART1:自动化登陆 打开登录页面
-login_url = 'https://aiarena.tencent.com/p/user/login?redirect=https%3A%2F%2Faiarena.tencent.com%2Flogin'
-browser.get(login_url)
+            '''self.eval_model()
+            time.sleep(self.time)'''
+    
+    def download_modle(self):
+        task_num = 0
+        for i in range(1, 11):
+            self.browser.get('https://aiarena.tencent.com/p/competition-exp/21/cluster-training') # 替换为目标网站的URL
+            time.sleep(3)
+            table = self.browser.find_element(By.XPATH, '//*[@id="root"]/div/div/section/section/main/div/div/div[2]/div/div/div/div/div[2]/div/div/div/div/div/table/tbody')
+            tr_list = table.find_elements(By.TAG_NAME, 'tr')
+            td_list = tr_list[i].find_elements(By.TAG_NAME, 'td')
+            if td_list[2].text == '进行中':
+                task_num += 1
+                task_name = td_list[1].text
+                if task_name not in self.last_name_counts:
+                    self.last_name_counts[task_name] = 0
+                    self.last_name[task_num - 1] = None
+                j, name = 1, None
+                while(True):
+                    self.browser.find_element(By.XPATH, 
+                    f'//*[@id="root"]/div/div/section/section/main/div/div/div[2]/div/div/div/div/div[2]/div/div/div/div/div/table/tbody/tr[{i+1}]/td[12]/div/div/div[2]/button').click()
+                    time.sleep(3)
+                    t1 = self.browser.find_element(By.XPATH, 
+                                                    '/html/body/div[2]/div/div[2]/div/div/div[2]/div/div/div/div/div/div/div/div/div/div/table/tbody')
+                    tr1_list = t1.find_elements(By.TAG_NAME, 'tr')
+                    td1_list = tr1_list[j].find_elements(By.TAG_NAME, 'td')
+                    if td1_list[0].text == self.last_name[task_num - 1]:break
+                    self.last_name_counts[task_name] += 1
+                    name = tr1_list[1].find_elements(By.TAG_NAME, 'td')[0].text
+                    self.browser.find_element(By.XPATH, 
+                        f'/html/body/div[2]/div/div[2]/div/div/div[2]/div/div/div/div/div/div/div/div/div/div/table/tbody/tr[{j+1}]/td[3]/div/div/div[2]/span/button').click()
+                    time.sleep(3)
+                    input1_s2 = self.browser.find_element(By.XPATH, 
+                                                            '/html/body/div[3]/div/div[2]/div/div/div[2]/form/div/div[1]/div[1]/div[2]/div[1]/div/span/input')
+                    model_name = task_name +'_'+ str(self.last_name_counts[task_name])
+                    input1_s2.send_keys(model_name)
+                    input2_s2 = self.browser.find_element(By.XPATH, '/html/body/div[3]/div/div[2]/div/div/div[2]/form/div/div[1]/div[4]/div[2]/div/div/div/textarea')
+                    input2_s2.send_keys(task_name+'_'+self.last_name[task_num - 1])
+                    time.sleep(2)
+                    self.browser.find_element(By.XPATH, '/html/body/div[3]/div/div[2]/div/div/div[2]/form/div/div[2]/div/div[1]/span/button').click()
+                    time.sleep(3)
+                    self.model_list.append(model_name)
+                    time.sleep(3)
+                    self.browser.get('https://aiarena.tencent.com/p/competition-exp/21/cluster-training')
+                    time.sleep(3)
+                    j += 1
+                    if j == len(tr1_list):break
+                self.last_name[task_num - 1] = name
+            if task_num == 2:break
+    
+    def eval_model(self):
+        model_to_eval = list(self.model_list)
+        table = self.browser.find_element(By.XPATH,
+                                    '/html/body/div/div/div/section/section/main/div/div/div[2]/div/div/div/div/div/div/div/div/div/div/table')
+        time.sleep(3)
+        tr_lsit = table.find_elements(By.TAG_NAME, 'tr')
+        for i in range(1, len(tr_lsit)):
+            td_list = tr_lsit[i].find_elements(By.TAG_NAME, 'td')
+            for model_name in model_to_eval:
+                if td_list[1].text == model_name:
+                    if td_list[3].text=='检测成功':
+                        self.browser.find_element(By.XPATH,f'//*[@id="root"]/div/div/section/section/main/div/div/div[2]/div/div/div/div/div/div/div/div/div/div/table/tbody/tr[{i}]/td[12]/div/div/div[1]/span/button/span').click()
+                        time.sleep(3)
+                        eval_input1_s2 = self.browser.find_element(By.XPATH,'/html/body/div[2]/div/div[2]/div/div/div[2]/form/div/div[1]/div[5]/div[2]/div[1]/div/span/input')
+                        eval_input1_s2.send_keys(model_name + 'vs' + self.emeny)
+                        eval_select1_element = self.browser.find_element(By.XPATH,'/html/body/div[2]/div/div[2]/div/div/div[2]/form/div/div[1]/div[7]/div[2]/div/div/div/div[2]/div[2]/div[1]/div/span/div/div/div[1]')
+                        # eval_select1_element.click()
+                        # 使用键盘上下箭头键浏览选项
+                        eval_select1_option = self.browser.find_element(By.XPATH,'/html/body/div[2]/div/div[2]/div/div/div[2]/form/div/div[1]/div[7]/div[2]/div/div/div/div[2]/div[2]/div[1]/div/span/div/div/div[1]/div/div/input')
+                        eval_select1_option.click()
+                        #选择评估阵容
+                        for i in range(3):
+                            eval_select1_option.send_keys(Keys.ARROW_DOWN)
+                            # 使用回车键选择选项
+                            eval_select1_option.send_keys(Keys.ENTER)
+                        #选择模型
+                        eval_select2_element=self.browser.find_element(By.XPATH,'/html/body/div[2]/div/div[2]/div/div/div[2]/form/div/div[1]/div[8]/div[2]/div/div/div/div[1]/div[2]/div/div/span/div/div/span[1]/input')
+                        eval_select2_element.click()
+                        time.sleep(3)
+                        eval_select2_element.send_keys(Keys.TAB)
+                        time.sleep(3)
+                        activate_element = self.browser.switch_to.active_element
+                        activate_element.send_keys(self.emeny)
+                        time.sleep(3)
+                        # activate_element.send_keys(Keys.ENTER)
+                        # eval_select2_element.send_keys(baseline_name)
+                        eval_select2_element.send_keys(Keys.ARROW_DOWN)
+                            # 使用回车键选择选项
+                        
+                        eval_select2_element.send_keys(Keys.ENTER)
+                        eval_select3_element=self.browser.find_element(By.XPATH,'/html/body/div[2]/div/div[2]/div/div/div[2]/form/div/div[1]/div[8]/div[2]/div/div/div/div[2]/div[2]/div/div/span/div/div/div[1]/div/div/input')
+                        eval_select3_element.click()
+                        for i in range(3):
+                            eval_select3_element.send_keys(Keys.ARROW_DOWN)
+                            # 使用回车键选择选项
+                            eval_select3_element.send_keys(Keys.ENTER)
+                        s3=self.browser.find_element(By.XPATH,'/html/body/div[2]/div/div[2]/div/div/div[2]/form/div/div[1]/div[9]/div[2]/div/div/div/div[1]/div[2]/div/div/div/div/div[2]/input')
+                        #删除现有轮数
+                        s3.send_keys(Keys.CONTROL+'a')
+                        s3.send_keys(Keys.DELETE)
+                        s3.send_keys(EVAL_NUM)
+                        s4=self.browser.find_element(By.XPATH,'/html/body/div[2]/div/div[2]/div/div/div[2]/form/div/div[2]/div/div[1]/span/button')
+                        s4.click()
+                        self.model_list.remove(model_name)
+                        self.eval_model_list.append(model_name)
 
-# 输入用户名和密码
-username = browser.find_element(By.ID,'basic_email')  # 替换为实际的用户名输入框定位方法
-password = browser.find_element(By.ID, 'basic_password') # 替换为实际的密码输入框定位方法
-submit = browser.find_element(By.XPATH,'//*[@id="basic"]/div[4]/div/div/div/span/button')
-username.send_keys('609531932@qq.com')
-password.send_keys('bupt151540809')
-submit.click()
-time.sleep(5)
-browser.get('https://aiarena.tencent.com/p/competition-exp/21/cluster-training') # 替换为目标网站的URL
-#PART2: 进入训练监控，获取模型指标信息，选择周围时间点模型。
-# 查找上传文件输入框并上传文件
-time.sleep(10)
-num_train = 0
-while(num_train!=2):
-    table = browser.find_element(By.XPATH, '//*[@id="root"]/div/div/section/section/main/div/div/div[2]/div/div/div/div/div[2]/div/div/div/div/div/table/tbody')
-    tr_lsit = table.find_elements(By.TAG_NAME, 'tr')
-    num_train += download_modle(tr_lsit, browser)
-    if num_train == 2 : break
-    s = browser.find_element(By.XPATH,'//*[@id="root"]/div/div/section/section/main/div/div/div[2]/div/div/div/div/div[2]/div/div/ul/li[9]/button')
-
-browser.quit()
+if __name__ == "__main__":
+    m = pa_chong()
+    m.go()
