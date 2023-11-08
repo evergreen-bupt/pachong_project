@@ -22,7 +22,7 @@
 2. 在导出模型之后，需要关闭模型导出页面和模型选取页面。需要测试是否正常关闭
 
    ```python
-    s4 = browser.find_element(By.XPATH, '/html/body/div[2]/div/div[2]/div/div/div[1]/div/button/span/svg')       
+    s4 = self.browser.find_element(By.XPATH, '/html/body/div[2]/div/div[2]/div/div/div[1]/div/button/span/svg')       
     s4.click()
     time.sleep(1)    
     s4.click()
